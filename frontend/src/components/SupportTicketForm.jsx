@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import API from "../api.jsx";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "../components/Navbar";
@@ -39,7 +39,7 @@ const SupportTicketForm = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post("http://localhost:5000/api/tickets/chat/start", { category }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.post("/api/tickets/chat/start", { category });
       const ticket = res.data.ticket;
       setTicketId(ticket._id); setSelectedCategory(category); setMessages(ticket.messages || []); setStatus(ticket.status); setView("chat");
     } catch (err) { toast.error(err.response?.data?.message || "Unable to start session."); }
@@ -55,7 +55,7 @@ const SupportTicketForm = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post("http://localhost:5000/api/tickets/chat/message", { ticketId, message: msg }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.post("/api/tickets/chat/message", { ticketId, message: msg });
       setMessages(res.data.ticket.messages); setStatus(res.data.ticket.status);
     } catch (err) { toast.error(err.response?.data?.message || "Failed to send."); }
     finally { setLoading(false); }
@@ -66,7 +66,7 @@ const SupportTicketForm = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post("http://localhost:5000/api/tickets/chat/status", { ticketId, status: newStatus }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.post("/api/tickets/chat/status", { ticketId, status: newStatus });
       setStatus(res.data.ticket.status);
       toast.success(newStatus === "resolved" ? "Issue marked as resolved." : "Ticket escalated to our team.");
       if (newStatus !== "active") setTimeout(() => setView("categories"), 1300);
@@ -78,7 +78,7 @@ const SupportTicketForm = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get("http://localhost:5000/api/tickets/me", { headers: { Authorization: `Bearer ${token}` } });
+      const res = await API.get("/api/tickets/me");
       setHistory(res.data.tickets || []); setView("history");
     } catch (err) { toast.error(err.response?.data?.message || "Failed to load history."); }
     finally { setLoading(false); }
@@ -89,7 +89,7 @@ const SupportTicketForm = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/tickets/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await API.delete(`/api/tickets/${id}`);
       setHistory((prev) => prev.filter((t) => t._id !== id));
       if (selectedHistoryTicket?._id === id) setSelectedHistoryTicket(null);
       toast.success("Conversation deleted.");

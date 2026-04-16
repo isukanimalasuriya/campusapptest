@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Users, Plus, LogIn, Search, Globe, Lock } from "lucide-react";
-import axios from "axios";
+import API from "../api.jsx";
 
 import GroupCard from "./GroupCard";
 import CreateGroupModal from "./CreateGroupModal";
@@ -32,10 +32,8 @@ const Community = () => {
     try {
       setLoading(true);
       const [myRes, pubRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/groups/my-groups", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        axios.get("http://localhost:5000/api/groups/public"),
+        API.get("/api/groups/my-groups"),
+        API.get("/api/groups/public"),
       ]);
       setMyGroups(myRes.data.data);
       setGroups(pubRes.data.data);

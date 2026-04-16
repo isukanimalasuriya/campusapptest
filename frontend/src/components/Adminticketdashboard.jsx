@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+import API from "../api.jsx";
 import { toast, ToastContainer } from "react-toastify";
 import {
   Lock,
@@ -16,11 +16,11 @@ import AdminNavbar from "./admin/AdminNavbar";
 import "react-toastify/dist/ReactToastify.css";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
-const API = "http://localhost:5000/api/admin";
-
 const authHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
 });
+
+const ADMIN_URL = "/api/admin";
 
 const categoryMeta = {
   "Account Access":  { Icon: Lock,        iconBg: "bg-violet-100",  iconClass: "text-violet-600" },
@@ -55,9 +55,8 @@ const Adminticketdashboard = () => {
   const fetchTickets = async (status = filter) => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`${API}/tickets`, {
+      const { data } = await API.get(`${ADMIN_URL}/tickets`, {
         params: { status },
-        headers: authHeaders(),
       });
       setTickets(data.tickets || []);
     } catch (err) {
@@ -74,7 +73,7 @@ const Adminticketdashboard = () => {
   const openTicket = async (id) => {
     setDetailLoading(true);
     try {
-      const { data } = await axios.get(`${API}/tickets/${id}`, { headers: authHeaders() });
+      const { data } = await API.get(`${ADMIN_URL}/tickets/${id}`);
       setSelected(data.ticket);
     } catch (err) {
       toast.error("Could not load ticket");
@@ -88,14 +87,12 @@ const Adminticketdashboard = () => {
     if (!reply.trim() || !selected) return;
     setSending(true);
     try {
-      const { data } = await axios.post(
-        `${API}/tickets/${selected._id}/reply`,
-        { message: reply.trim() },
-        { headers: authHeaders() }
+      const { data } = await API.post(
+        `${ADMIN_URL}/tickets/${selected._id}/reply`,
+        { message: reply.trim() }
       );
       setSelected(data.ticket);
       setReply("");
-      // patch list preview
       setTickets((prev) =>
         prev.map((t) => (t._id === data.ticket._id ? { ...t, updatedAt: data.ticket.updatedAt } : t))
       );
@@ -110,10 +107,9 @@ const Adminticketdashboard = () => {
   // ── change status (from detail panel) ──
   const changeStatus = async (newStatus) => {
     try {
-      const { data } = await axios.patch(
-        `${API}/tickets/${selected._id}/status`,
-        { status: newStatus },
-        { headers: authHeaders() }
+      const { data } = await API.patch(
+        `${ADMIN_URL}/tickets/${selected._id}/status`,
+        { status: newStatus }
       );
       setSelected(data.ticket);
       setTickets((prev) =>
@@ -129,7 +125,7 @@ const Adminticketdashboard = () => {
   const deleteTicket = async (id) => {
     if (!window.confirm("Permanently delete this ticket?")) return;
     try {
-      await axios.delete(`${API}/tickets/${id}`, { headers: authHeaders() });
+      await API.delete(`${ADMIN_URL}/tickets/${id}`);
       setTickets((prev) => prev.filter((t) => t._id !== id));
       if (selected?._id === id) setSelected(null);
       toast.success("Ticket deleted.");

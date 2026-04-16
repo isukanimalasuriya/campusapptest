@@ -1,7 +1,7 @@
 // frontend/src/components/community/GroupCard.jsx
 import React, { useState } from "react";
 import { Users, Globe, Lock, User, Tag, Loader2 } from "lucide-react";
-import axios from "axios";
+import API from "../../api.jsx";
 
 const GroupCard = ({ group, onClick, showJoinButton = false, onJoinSuccess }) => {
   const [joining, setJoining] = useState(false);
@@ -17,10 +17,9 @@ const GroupCard = ({ group, onClick, showJoinButton = false, onJoinSuccess }) =>
     setJoining(true);
     setError("");
     try {
-      await axios.post(
-        "http://localhost:5000/api/groups/join",
-        { inviteCode: group.inviteCode },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await API.post(
+        "/api/groups/join",
+        { inviteCode: group.inviteCode }
       );
       setJoined(true);
       if (onJoinSuccess) onJoinSuccess();

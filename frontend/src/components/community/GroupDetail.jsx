@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../../api.jsx";
 import {
   ArrowLeft, Users, MessageSquare, FolderOpen, Megaphone,
   Send, Trash2, Plus, Link, FileText, Pin, Crown,
@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Navbar from "../Navbar";
 
-const API = "http://localhost:5000/api";
+const API_BASE = "/api";
 
 // File helpers
 const formatBytes = (bytes) => {
@@ -214,7 +214,7 @@ const GroupDetail = () => {
   const fetchGroup = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API}/groups/${id}`, { headers });
+      const res = await API.get(`${API_BASE}/groups/${id}`, { headers });
       setGroup(res.data.data);
       checkMembership(res.data.data);
     } catch (err) {
@@ -276,7 +276,7 @@ const GroupDetail = () => {
   const startTypingPolling = () => {
     typingPollRef.current = setInterval(async () => {
       try {
-        const res = await axios.get(`${API}/groups/${id}/typing`, { headers });
+        const res = await API.get(`${API_BASE}/groups/${id}/typing`, { headers });
         setTypingUsers(
           (res.data.typingUsers || []).filter((u) => u.userId !== currentUserId)
         );
@@ -295,7 +295,7 @@ const GroupDetail = () => {
     if (!isTyping && e.target.value.trim()) {
       setIsTyping(true);
       axios
-        .post(`${API}/groups/${id}/typing`, { typing: true }, { headers })
+        .post(`${API_BASE}/groups/${id}/typing`, { typing: true }, { headers })
         .catch(() => {});
     }
     clearTimeout(typingTimeoutRef.current);
@@ -303,7 +303,7 @@ const GroupDetail = () => {
       if (isTyping) {
         setIsTyping(false);
         axios
-          .post(`${API}/groups/${id}/typing`, { typing: false }, { headers })
+          .post(`${API_BASE}/groups/${id}/typing`, { typing: false }, { headers })
           .catch(() => {});
       }
     }, 2000);
@@ -312,7 +312,7 @@ const GroupDetail = () => {
   // Messages
   const fetchMessages = async () => {
     try {
-      const res = await axios.get(`${API}/groups/${id}/messages`, { headers });
+      const res = await API.get(`${API_BASE}/groups/${id}/messages`, { headers });
       setMessages(res.data.data);
       
       // Mark messages as read when they're loaded
@@ -328,7 +328,7 @@ const GroupDetail = () => {
   
   try {
     isMarkingRead.current = true;
-    await axios.post(`${API}/groups/${id}/messages/read`, {}, { headers });
+    await API.post(`${API_BASE}/groups/${id}/messages/read`, {}, { headers });
     await fetchMessageCount();
   } catch (err) {
     console.error("Failed to mark messages as read:", err);
@@ -342,7 +342,7 @@ const GroupDetail = () => {
 
   const fetchMessageCount = async () => {
     try {
-      const res = await axios.get(`${API}/groups/${id}/messages/count`, { headers });
+      const res = await API.get(`${API_BASE}/groups/${id}/messages/count`, { headers });
       setMessageCount(res.data.count);
     } catch {}
   };
@@ -386,7 +386,7 @@ const GroupDetail = () => {
     if (selectedFile) formData.append("file", selectedFile);
     if (replyTo) formData.append("replyTo", replyTo._id);
 
-    await axios.post(`${API}/groups/${id}/messages`, formData, {
+    await API.post(`${API_BASE}/groups/${id}/messages`, formData, {
       headers: {
         ...headers,
         "Content-Type": "multipart/form-data",
@@ -412,7 +412,7 @@ const GroupDetail = () => {
 
   const handleDeleteMessage = async (messageId) => {
     try {
-      await axios.delete(`${API}/groups/${id}/messages/${messageId}`, { headers });
+      await API.delete(`${API_BASE}/groups/${id}/messages/${messageId}`, { headers });
       setMessages((prev) =>
         prev.map((m) =>
           m._id === messageId ? { ...m, deleted: true, content: "", file: null } : m
@@ -427,7 +427,7 @@ const GroupDetail = () => {
   // Resources
   const fetchResources = async () => {
     try {
-      const res = await axios.get(`${API}/groups/${id}/resources`, { headers });
+      const res = await API.get(`${API_BASE}/groups/${id}/resources`, { headers });
       setResources(res.data.data);
     } catch {}
   };
@@ -435,8 +435,8 @@ const GroupDetail = () => {
   const handleAddResource = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        `${API}/groups/${id}/resources`,
+      const res = await API.post(
+        `${API_BASE}/groups/${id}/resources`,
         resourceForm,
         { headers }
       );
@@ -450,7 +450,7 @@ const GroupDetail = () => {
 
   const handleDeleteResource = async (resourceId) => {
     try {
-      await axios.delete(`${API}/groups/${id}/resources/${resourceId}`, { headers });
+      await API.delete(`${API_BASE}/groups/${id}/resources/${resourceId}`, { headers });
       setResources((prev) => prev.filter((r) => r._id !== resourceId));
     } catch {
       setError("Failed to delete resource");
@@ -460,7 +460,7 @@ const GroupDetail = () => {
   // Announcements
   const fetchAnnouncements = async () => {
     try {
-      const res = await axios.get(`${API}/groups/${id}/announcements`, { headers });
+      const res = await API.get(`${API_BASE}/groups/${id}/announcements`, { headers });
       setAnnouncements(res.data.data);
       setUnreadCount(res.data.unreadCount || 0);
     } catch {}
@@ -468,7 +468,7 @@ const GroupDetail = () => {
 
   const markRead = async () => {
     try {
-      await axios.post(`${API}/groups/${id}/announcements/read`, {}, { headers });
+      await API.post(`${API_BASE}/groups/${id}/announcements/read`, {}, { headers });
       setUnreadCount(0);
     } catch {}
   };
@@ -476,8 +476,8 @@ const GroupDetail = () => {
   const handleCreateAnnouncement = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        `${API}/groups/${id}/announcements`,
+      const res = await API.post(
+        `${API_BASE}/groups/${id}/announcements`,
         announcementForm,
         { headers }
       );
@@ -491,8 +491,8 @@ const GroupDetail = () => {
 
   const handleDeleteAnnouncement = async (announcementId) => {
     try {
-      await axios.delete(
-        `${API}/groups/${id}/announcements/${announcementId}`,
+      await API.delete(
+        `${API_BASE}/groups/${id}/announcements/${announcementId}`,
         { headers }
       );
       setAnnouncements((prev) => prev.filter((a) => a._id !== announcementId));
@@ -506,8 +506,8 @@ const GroupDetail = () => {
     if (!group?.inviteCode) return;
     setJoining(true);
     try {
-      await axios.post(
-        `${API}/groups/join`,
+      await API.post(
+        `${API_BASE}/groups/join`,
         { inviteCode: group.inviteCode },
         { headers }
       );
@@ -523,7 +523,7 @@ const GroupDetail = () => {
     if (!window.confirm("Are you sure you want to leave this group?")) return;
     setLeaving(true);
     try {
-      await axios.post(`${API}/groups/${id}/leave`, {}, { headers });
+      await API.post(`${API_BASE}/groups/${id}/leave`, {}, { headers });
       navigate("/community");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to leave group");

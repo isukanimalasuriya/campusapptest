@@ -1,7 +1,7 @@
 // frontend/src/components/community/JoinGroupModal.jsx
 import React, { useState } from "react";
 import { X, LogIn, KeyRound } from "lucide-react";
-import axios from "axios";
+import API from "../../api.jsx";
 
 const JoinGroupModal = ({ onClose, onSuccess }) => {
   const [inviteCode, setInviteCode] = useState("");
@@ -14,10 +14,9 @@ const JoinGroupModal = ({ onClose, onSuccess }) => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/groups/join",
-        { inviteCode: inviteCode.toUpperCase() },
-        { headers: { Authorization: `Bearer ${token}` } }
+      const res = await API.post(
+        "/api/groups/join",
+        { inviteCode: inviteCode.toUpperCase() }
       );
       if (res.data.success) onSuccess();
     } catch (err) {

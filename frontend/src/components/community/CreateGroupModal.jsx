@@ -14,6 +14,7 @@ import {
   Plus,
 } from "lucide-react";
 import axios from "axios";
+import API from "../../api.jsx";
 
 const CATEGORIES = [
   "General Discussion",
@@ -80,15 +81,10 @@ const CreateGroupModal = ({ onClose, onSuccess }) => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/groups",
+      const res = await API.post(
+        "/api/groups",
         formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
+        { headers: { "Content-Type": "application/json" } }
       );
       if (res.data.success) {
         handleClose();
