@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Users, Plus, LogIn, Search, Globe, Lock } from "lucide-react";
-import API from "../api.jsx";
+import API from "../../api.jsx";
 
 import GroupCard from "./GroupCard";
 import CreateGroupModal from "./CreateGroupModal";

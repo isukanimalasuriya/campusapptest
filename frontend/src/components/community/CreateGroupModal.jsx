@@ -13,7 +13,6 @@ import {
   Check,
   Plus,
 } from "lucide-react";
-import axios from "axios";
 import API from "../../api.jsx";
 
 const CATEGORIES = [

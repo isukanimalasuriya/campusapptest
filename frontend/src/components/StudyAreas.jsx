@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
+import { SOCKET_ORIGIN } from "../api.jsx";
 import {
   MapPin,
   Users,
@@ -14,7 +15,8 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const socket = io("https://campus-app-backend-yd8t.onrender.com");
+const API_BASE = `${SOCKET_ORIGIN}/api`;
+const socket = io(SOCKET_ORIGIN);
 
 /* ─── helpers ─────────────────────────────────────────── */
 function getStatusLabel(status) {
@@ -279,17 +281,13 @@ export default function StudyAreas() {
 
   /* Load spaces */
   const loadSpaces = () =>
-    fetch("https://campus-app-backend-yd8t.onrender.com/api/spaces", {
-      headers,
-    })
+    fetch(`${API_BASE}/spaces`, { headers })
       .then((r) => r.json())
       .then((d) => setAreas(d.spaces || []));
 
   /* Load active booking */
   const loadActiveBooking = () =>
-    fetch("https://campus-app-backend-yd8t.onrender.com/api/bookings/active", {
-      headers,
-    })
+    fetch(`${API_BASE}/bookings/active`, { headers })
       .then((r) => r.json())
       .then((d) => setActiveBooking(d.active || null));
 
@@ -300,10 +298,7 @@ export default function StudyAreas() {
 
   /* Load tables for a space */
   const fetchTables = async (spaceId) => {
-    const res = await fetch(
-      `https://campus-app-backend-yd8t.onrender.com/api/spaces/${spaceId}/tables`,
-      { headers },
-    );
+    const res = await fetch(`${API_BASE}/spaces/${spaceId}/tables`, { headers });
     const data = await res.json();
     setSelectedArea({ ...data.space, tables: data.tables });
     setSelectedTable(null);
@@ -367,14 +362,11 @@ export default function StudyAreas() {
   const handleCheckIn = async () => {
     if (!selectedTable) return;
     setLoading(true);
-    const res = await fetch(
-      "https://campus-app-backend-yd8t.onrender.com/api/bookings",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json", ...headers },
-        body: JSON.stringify({ tableId: selectedTable._id, seats }),
-      },
-    );
+    const res = await fetch(`${API_BASE}/bookings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...headers },
+      body: JSON.stringify({ tableId: selectedTable._id, seats }),
+    });
     const data = await res.json();
     setLoading(false);
     if (!res.ok) return alert(data.message);
@@ -388,13 +380,10 @@ export default function StudyAreas() {
   /* Check-out */
   const handleCheckout = async () => {
     setLoading(true);
-    const res = await fetch(
-      "https://campus-app-backend-yd8t.onrender.com/api/bookings/checkout",
-      {
-        method: "POST",
-        headers,
-      },
-    );
+    const res = await fetch(`${API_BASE}/bookings/checkout`, {
+      method: "POST",
+      headers,
+    });
     const data = await res.json();
     setLoading(false);
     if (!res.ok) return alert(data.message);

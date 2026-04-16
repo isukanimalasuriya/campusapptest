@@ -1,14 +1,12 @@
 import axios from "axios";
 
-const API_BASE =
-  import.meta.env.VITE_API_URL ||
-  "https://campus-app-backend-yd8t.onrender.com";
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 /** Socket.IO server origin (no `/api` suffix). */
 export const SOCKET_ORIGIN =
   import.meta.env.VITE_SOCKET_URL ||
   API_BASE.replace(/\/?api\/?$/i, "").replace(/\/$/, "") ||
-  "https://campus-app-backend-yd8t.onrender.com";
+  "http://localhost:5000";
 
 const API = axios.create({
   baseURL: API_BASE,
