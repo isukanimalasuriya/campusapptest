@@ -10,8 +10,7 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 import skillRoutes from "./routes/skillRoutes.js";
 import ticketRoutes from "./routes/ticketRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
-import adminTicketRoutes from "./routes/AdminTicketRoutes.js";
-//import adminTicketRoutes from "./routes/adminTicketRoutes.js";
+import adminTicketRoutes from "./routes/AdminticketRoutes.js";
 import adminSpaceRoutes from "./routes/adminSpaceRoutes.js";
 
 import { errorHandler } from "./middleware/errorHandler.js";
