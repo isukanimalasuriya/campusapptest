@@ -1,0 +1,22 @@
+export const SLIIT_SUBJECTS = [
+  { year: 1, code: "IT1010", name: "Introduction to Computing" },
+  { year: 1, code: "IT1020", name: "Programming Fundamentals" },
+  { year: 1, code: "IT1030", name: "Mathematics for Computing" },
+  { year: 1, code: "IT1040", name: "Communication Skills" },
+  { year: 1, code: "IT1050", name: "Computer Systems Fundamentals" },
+  { year: 2, code: "IT2010", name: "Object Oriented Programming" },
+  { year: 2, code: "IT2020", name: "Data Structures & Algorithms" },
+  { year: 2, code: "IT2030", name: "Database Systems" },
+  { year: 2, code: "IT2040", name: "Software Engineering" },
+  { year: 2, code: "IT2050", name: "Human Computer Interaction" },
+  { year: 3, code: "IT3010", name: "Web Application Development" },
+  { year: 3, code: "IT3020", name: "Mobile Application Development" },
+  { year: 3, code: "IT3030", name: "Computer Networks" },
+  { year: 3, code: "IT3040", name: "Information Security" },
+  { year: 3, code: "IT3050", name: "Software Quality Assurance" },
+  { year: 4, code: "IT4010", name: "Final Year Project" },
+  { year: 4, code: "IT4020", name: "Advanced Software Engineering" },
+  { year: 4, code: "IT4030", name: "Artificial Intelligence" },
+  { year: 4, code: "IT4040", name: "Data Science" },
+  { year: 4, code: "IT4050", name: "Cloud Computing" }
+];
