@@ -5,7 +5,7 @@ import {
   adminReplyToTicket,
   updateTicketStatusAdmin,
   deleteTicketAdmin,
-} from "../controllers/Adminticketcontroller.js";
+} from "../controllers/adminTicketController.js";
 import { auth } from "../middleware/authMiddleware.js";
 
 const router = Router();
