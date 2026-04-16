@@ -14,7 +14,7 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://campus-app-backend-yd8t.onrender.com");
 
 /* ─── helpers ─────────────────────────────────────────── */
 function getStatusLabel(status) {
@@ -279,13 +279,17 @@ export default function StudyAreas() {
 
   /* Load spaces */
   const loadSpaces = () =>
-    fetch("http://localhost:5000/api/spaces", { headers })
+    fetch("https://campus-app-backend-yd8t.onrender.com/api/spaces", {
+      headers,
+    })
       .then((r) => r.json())
       .then((d) => setAreas(d.spaces || []));
 
   /* Load active booking */
   const loadActiveBooking = () =>
-    fetch("http://localhost:5000/api/bookings/active", { headers })
+    fetch("https://campus-app-backend-yd8t.onrender.com/api/bookings/active", {
+      headers,
+    })
       .then((r) => r.json())
       .then((d) => setActiveBooking(d.active || null));
 
@@ -297,7 +301,7 @@ export default function StudyAreas() {
   /* Load tables for a space */
   const fetchTables = async (spaceId) => {
     const res = await fetch(
-      `http://localhost:5000/api/spaces/${spaceId}/tables`,
+      `https://campus-app-backend-yd8t.onrender.com/api/spaces/${spaceId}/tables`,
       { headers },
     );
     const data = await res.json();
@@ -321,11 +325,17 @@ export default function StudyAreas() {
   }, [qrTarget.spaceId, selectedArea?._id]);
 
   useEffect(() => {
-    if (!selectedArea || !qrTarget.tableId || selectedArea._id !== qrTarget.spaceId) {
+    if (
+      !selectedArea ||
+      !qrTarget.tableId ||
+      selectedArea._id !== qrTarget.spaceId
+    ) {
       return;
     }
 
-    const targetTable = selectedArea.tables?.find((t) => t._id === qrTarget.tableId);
+    const targetTable = selectedArea.tables?.find(
+      (t) => t._id === qrTarget.tableId,
+    );
     if (!targetTable) {
       toast.error("Scanned table could not be found.");
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -357,11 +367,14 @@ export default function StudyAreas() {
   const handleCheckIn = async () => {
     if (!selectedTable) return;
     setLoading(true);
-    const res = await fetch("http://localhost:5000/api/bookings", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...headers },
-      body: JSON.stringify({ tableId: selectedTable._id, seats }),
-    });
+    const res = await fetch(
+      "https://campus-app-backend-yd8t.onrender.com/api/bookings",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...headers },
+        body: JSON.stringify({ tableId: selectedTable._id, seats }),
+      },
+    );
     const data = await res.json();
     setLoading(false);
     if (!res.ok) return alert(data.message);
@@ -375,10 +388,13 @@ export default function StudyAreas() {
   /* Check-out */
   const handleCheckout = async () => {
     setLoading(true);
-    const res = await fetch("http://localhost:5000/api/bookings/checkout", {
-      method: "POST",
-      headers,
-    });
+    const res = await fetch(
+      "https://campus-app-backend-yd8t.onrender.com/api/bookings/checkout",
+      {
+        method: "POST",
+        headers,
+      },
+    );
     const data = await res.json();
     setLoading(false);
     if (!res.ok) return alert(data.message);
