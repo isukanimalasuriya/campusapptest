@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
-import { SOCKET_ORIGIN } from "../api.jsx";
+import API, { SOCKET_ORIGIN } from "../api.jsx";
 import {
   MapPin,
   Users,
@@ -15,7 +14,7 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const API_BASE = `${SOCKET_ORIGIN}/api`;
+// Removed local API_BASE
 const socket = io(SOCKET_ORIGIN);
 
 /* ─── helpers ─────────────────────────────────────────── */
@@ -277,19 +276,17 @@ export default function StudyAreas() {
   const [qrTarget, setQrTarget] = useState({ spaceId: "", tableId: "" });
 
   const token = localStorage.getItem("token");
-  const headers = { Authorization: `Bearer ${token}` };
+  // headers removed as they are handled by API interceptor
 
   /* Load spaces */
   const loadSpaces = () =>
-    fetch(`${API_BASE}/spaces`, { headers })
-      .then((r) => r.json())
-      .then((d) => setAreas(d.spaces || []));
+    API.get(`/spaces`)
+      .then((res) => setAreas(res.data.spaces || []));
 
   /* Load active booking */
   const loadActiveBooking = () =>
-    fetch(`${API_BASE}/bookings/active`, { headers })
-      .then((r) => r.json())
-      .then((d) => setActiveBooking(d.active || null));
+    API.get(`/bookings/active`)
+      .then((res) => setActiveBooking(res.data.active || null));
 
   useEffect(() => {
     loadSpaces();
@@ -298,8 +295,8 @@ export default function StudyAreas() {
 
   /* Load tables for a space */
   const fetchTables = async (spaceId) => {
-    const res = await fetch(`${API_BASE}/spaces/${spaceId}/tables`, { headers });
-    const data = await res.json();
+    const res = await API.get(`/spaces/${spaceId}/tables`);
+    const data = res.data;
     setSelectedArea({ ...data.space, tables: data.tables });
     setSelectedTable(null);
     setSeats(1);
@@ -362,12 +359,8 @@ export default function StudyAreas() {
   const handleCheckIn = async () => {
     if (!selectedTable) return;
     setLoading(true);
-    const res = await fetch(`${API_BASE}/bookings`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...headers },
-      body: JSON.stringify({ tableId: selectedTable._id, seats }),
-    });
-    const data = await res.json();
+    const res = await API.post(`/bookings`, { tableId: selectedTable._id, seats });
+    const data = res.data;
     setLoading(false);
     if (!res.ok) return alert(data.message);
     setActiveBooking(data.booking);
@@ -380,11 +373,8 @@ export default function StudyAreas() {
   /* Check-out */
   const handleCheckout = async () => {
     setLoading(true);
-    const res = await fetch(`${API_BASE}/bookings/checkout`, {
-      method: "POST",
-      headers,
-    });
-    const data = await res.json();
+    const res = await API.post(`/bookings/checkout`);
+    const data = res.data;
     setLoading(false);
     if (!res.ok) return alert(data.message);
     setActiveBooking(null);

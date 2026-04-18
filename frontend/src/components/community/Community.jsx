@@ -32,8 +32,8 @@ const Community = () => {
     try {
       setLoading(true);
       const [myRes, pubRes] = await Promise.all([
-        API.get("/api/groups/my-groups"),
-        API.get("/api/groups/public"),
+        API.get("/groups/my-groups"),
+        API.get("/groups/public"),
       ]);
       setMyGroups(myRes.data.data);
       setGroups(pubRes.data.data);

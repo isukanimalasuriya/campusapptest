@@ -27,7 +27,7 @@ const MyTickets = () => {
       const token = localStorage.getItem("token");
       if (!token) { toast.error("You must be logged in!"); setLoading(false); return; }
       try {
-        const { data } = await API.get("/api/tickets/me");
+        const { data } = await API.get("/tickets/me");
         setTickets(data.tickets || []);
       } catch (err) {
         toast.error(err.response?.data?.message || "Failed to load tickets");
@@ -49,7 +49,7 @@ const MyTickets = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      await API.delete(`/api/tickets/${ticketId}`);
+      await API.delete(`/tickets/${ticketId}`);
       setTickets((prev) => prev.filter((t) => t._id !== ticketId));
       toast.success("Conversation deleted.");
     } catch (err) {
